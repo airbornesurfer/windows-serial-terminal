@@ -11,7 +11,7 @@ Requirement:
 
 import os
 if os.name == 'nt':
-    os.system('title Terminal S')
+    os.system('title Serial Console')
 
 from collections import deque
 import sys
@@ -23,7 +23,7 @@ import serial
 from serial.tools import list_ports
 
 
-def run(port, baudrate, parity='N', stopbits=1):
+def run(port, baudrate = 115200, parity='N', stopbits=1):
     try:
         device = serial.Serial(port=port,
                                 baudrate=baudrate,
@@ -91,18 +91,12 @@ def run(port, baudrate, parity='N', stopbits=1):
             return 1
     return 0
 
-
-
-
-CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
-
-@click.command(context_settings=CONTEXT_SETTINGS)
+@click.command()
 @click.option('-p', '--port', default=None, help='serial port name')
-@click.option('-b', '--baudrate', default=115200, help='set baud reate')
-@click.option('--parity', default='N', type=click.Choice(['N', 'E', 'O', 'S', 'M']), help='set parity')
-@click.option('-s', '--stopbits', default=1, help='set stop bits')
 @click.option('-l', is_flag=True, help='list serial ports')
-def main(port, baudrate, parity, stopbits, l):
+
+def main(port, l):
+    port is None
     if port is None:
         ports = list_ports.comports()
         if not ports:
@@ -122,7 +116,15 @@ def main(port, baudrate, parity, stopbits, l):
                 port = ports[n][0]
             except:
                 return
-
+    baudrate = input("Enter baud rate (Default 115200): ")
+    if (len(baudrate) == 0):
+        baudrate = 115200
+    parity = input("Enter parity [N,E,O,S,M] (Default N): ")
+    if (len(parity) == 0):
+        parity = "N"
+    stopbits = input("Enter stop bit (Default 1): ")
+    if (len(stopbits) == 0):
+        stopbits = 1    
     while run(port, baudrate, parity, stopbits):
         pass
 
